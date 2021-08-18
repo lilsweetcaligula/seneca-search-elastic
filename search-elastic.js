@@ -42,7 +42,12 @@ function search_elastic(options) {
     console.dir(out.hits.hits, { depth: 32 }) // dbg
 
 
-    return reply(null, { ok: true })
+    const hits = out.hits.hits.map(hit => ({
+      id: hit._id,
+      doc: hit._source
+    }))
+
+    return reply(null, { ok: true, data: { hits } })
   })
 
 
