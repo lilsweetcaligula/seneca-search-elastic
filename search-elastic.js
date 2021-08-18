@@ -1,7 +1,11 @@
 const Elasticsearch = require('elasticsearch')
 
 
-function search_elastic(options) {
+const SENECA_INDEX = 'seneca'
+const SENECA_DOCTYPE = 'senecadoctype'
+
+
+async function search_elastic(options) {
   const seneca = this
 
 
@@ -12,6 +16,65 @@ function search_elastic(options) {
 
   const { elastic: elastic_config } = options
   const elastic_client = new Elasticsearch.Client(elastic_config)
+
+
+  const has_index = await elastic_client.indices.exists({
+    index: SENECA_INDEX
+  })
+
+  if (!has_index) {
+    await elastic_client.indices.create({
+      index: SENECA_INDEX
+    })
+  }
+
+
+  seneca.add('sys:search,cmd:add', async function (msg, reply) {
+    if (null == msg.doc) {
+      return {
+        ok: false,
+        why: 'invalid-field',
+        details: {
+          path: ['doc'],
+          why_exactly: 'required'
+        }
+      }
+    }
+
+    const { doc } = msg
+
+
+    if (null == typeof doc.id) {
+      return {
+        ok: false,
+        why: 'invalid-field',
+        details: {
+          path: ['doc', 'id'],
+          why_exactly: 'required'
+        }
+      }
+    }
+
+    const { id: doc_id } = doc
+
+
+    const body = { ...doc }; delete body.id
+
+    const created = await elastic_client.create({
+      index: SENECA_INDEX,
+      type: SENECA_DOCTYPE,
+      id: doc_id,
+      body
+    })
+
+    if ('created' !== created.result) {
+      console.error(created.result)
+      return reply(null, { ok: false })
+    }
+
+
+    return reply(null, { ok: true })
+  })
 
 
   seneca.add('sys:search,cmd:search', async function (msg, reply) {
