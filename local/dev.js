@@ -1,6 +1,6 @@
 const Assert = require('assert')
 const Seneca = require('seneca')
-const SenecaSearchElastic = require('./search-elastic')
+const SenecaSearchElastic = require('../search-elastic')
 
 
 async function run() {
