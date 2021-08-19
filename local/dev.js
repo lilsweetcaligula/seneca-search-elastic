@@ -23,8 +23,8 @@ async function run() {
   ]
 
   for (const doc of docs) {
-    await seneca.post('sys:search,cmd:add', { doc })
-      .then(added => Assert(added.ok))
+    const added = await seneca.post('sys:search,cmd:add', { doc })
+    Assert(added.ok)
   }
 
 
@@ -32,7 +32,7 @@ async function run() {
     query: 'bob'
   })
 
-  console.dir(out, { depth: 32 }) // dbg
+  console.dir(out, { depth: 32 })
 
 
   return
