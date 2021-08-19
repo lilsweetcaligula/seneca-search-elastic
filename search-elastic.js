@@ -28,7 +28,6 @@ async function search_elastic(options) {
     })
   }
 
-
   seneca.add('sys:search,cmd:add', async function (msg, reply) {
     if (null == msg.doc) {
       return {
@@ -76,7 +75,6 @@ async function search_elastic(options) {
     return reply(null, { ok: true })
   })
 
-
   seneca.add('sys:search,cmd:search', async function (msg, reply) {
     if (null == msg.query) {
       return {
@@ -92,17 +90,14 @@ async function search_elastic(options) {
     const { query } = msg
 
 
-    /* NOTE: For more information, please see documentation at:
-     *
-     * https://www.npmjs.com/package/elasticsearch
-     *
-     */
+    // NOTE: For more information, please see documentation at:
+    //
+    // https://www.npmjs.com/package/elasticsearch
+    //
+    //
     const out = await elastic_client.search({
       q: query
     })
-
-    console.dir(out, { depth: 32 }) // dbg
-    console.dir(out.hits.hits, { depth: 32 }) // dbg
 
 
     const hits = out.hits.hits.map(hit => ({
