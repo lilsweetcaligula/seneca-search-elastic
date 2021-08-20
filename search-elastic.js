@@ -28,6 +28,7 @@ async function search_elastic(options) {
     })
   }
 
+
   seneca.add('sys:search,cmd:add', async function (msg, reply) {
     if (null == msg.doc) {
       return {
@@ -75,6 +76,7 @@ async function search_elastic(options) {
     return reply(null, { ok: true })
   })
 
+
   seneca.add('sys:search,cmd:search', async function (msg, reply) {
     if (null == msg.query) {
       return {
@@ -106,6 +108,36 @@ async function search_elastic(options) {
     }))
 
     return reply(null, { ok: true, data: { hits } })
+  })
+
+
+  seneca.add('sys:search,cmd:remove', async function (msg, reply) {
+    if (null == msg.id) {
+      return {
+        ok: false,
+        why: 'invalid-field',
+        details: {
+          path: ['id'],
+          why_exactly: 'required'
+        }
+      }
+    }
+
+    const { id: doc_id } = msg
+
+
+    const removed = await elastic_client.delete({
+      index: SENECA_INDEX,
+      type: SENECA_DOCTYPE,
+      id: doc_id
+    })
+
+    if ('ok' !== removed.status) {
+      return reply(null, { ok: false, why: 'remove-failed' })
+    }
+
+
+    return reply(null, { ok: true })
   })
 
 
