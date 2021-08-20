@@ -68,7 +68,7 @@ async function search_elastic(options) {
     })
 
     if ('created' !== created.result) {
-      console.error(created.result)
+      console.error(created.result) // TODO: Proper logging.
       return reply(null, { ok: false })
     }
 
