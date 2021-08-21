@@ -4,8 +4,10 @@
   "description": "",
   "main": "search-elastic.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start-local": "./scripts/start-elasticsearch.sh"
+    "test-fast": "./node_modules/jasmine/bin/jasmine.js --config=test/support/jasmine.json",
+    "test": "./scripts/start-elasticsearch.sh -dD && ./scripts/wait-for-elastic-container.sh && npm run test-fast; ./scripts/stop-elasticsearch.sh",
+    "start-local": "./scripts/start-elasticsearch.sh",
+    "stop-local": "./scripts/stop-elasticsearch.sh"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +16,9 @@
     "elasticsearch": "16.7.2"
   },
   "devDependencies": {
+    "jasmine": "3.8.0",
     "seneca": "3.23.3",
-    "seneca-promisify": "2.0.0"
+    "seneca-promisify": "2.0.0",
+    "seneca-search-test": "file:../seneca-search-test"
   }
 }
