@@ -2,12 +2,17 @@ const Seneca = require('seneca')
 const Shared = require('seneca-search-test')
 const SearchElastic = require('../search-elastic')
 
+// NOTE: This is required for the tests not to timeout, when waiting on
+// the search plugin to initialize.
+//
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10e3
+
 
 describe('Compliance tests', () => {
   const seneca = make_seneca()
 
   beforeAll(done => {
-    seneca.ready(done)
+    wait_for_search_plugin_to_initialize(seneca, done)
   })
 
   Shared.supports_add({
@@ -35,5 +40,10 @@ function make_seneca() {
   })
 
   return si
+}
+
+
+function wait_for_search_plugin_to_initialize(seneca, done) {
+  seneca.once('plugin_ready:search-elastic', done)
 }
 

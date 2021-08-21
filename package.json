@@ -5,7 +5,7 @@
   "main": "search-elastic.js",
   "scripts": {
     "test-fast": "./node_modules/jasmine/bin/jasmine.js --config=test/support/jasmine.json",
-    "test": "echo 'Not implemented' && exit 1",
+    "test": "./scripts/start-elasticsearch.sh -dD && ./scripts/wait-for-elastic-container.sh && npm run test-fast; ./scripts/stop-elasticsearch.sh",
     "start-local": "./scripts/start-elasticsearch.sh",
     "stop-local": "./scripts/stop-elasticsearch.sh"
   },

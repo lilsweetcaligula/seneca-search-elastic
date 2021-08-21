@@ -141,6 +141,14 @@ async function search_elastic(options) {
   })
 
 
+  /* NOTE: This is a workaround, because Seneca's "ready" event will currently
+   * trigger _before_ async plugins have finished their initialization. Listen
+   * to this event in order to safely continue operations against the
+   * Elasticsearch instance.
+   */
+  seneca.emit('plugin_ready:search-elastic')
+
+
   return
 }
 
