@@ -15,17 +15,17 @@ describe('Compliance tests', () => {
     wait_for_search_plugin_to_initialize(seneca, done)
   })
 
-  Shared.supports_add({
-    seneca
-  })
+  Shared.supports_add({ seneca })
 
-  Shared.supports_search({
-    seneca
-  })
+  Shared.supports_search({ seneca })
 
-  Shared.supports_remove({
-    seneca
-  })
+  Shared.supports_remove({ seneca })
+
+  Shared.remove({ seneca })
+
+  Shared.add({ seneca })
+
+  Shared.search({ seneca })
 })
 
 

@@ -31,28 +31,28 @@ async function search_elastic(options) {
 
   seneca.add('sys:search,cmd:add', async function (msg, reply) {
     if (null == msg.doc) {
-      return {
+      return reply(null, {
         ok: false,
         why: 'invalid-field',
         details: {
           path: ['doc'],
           why_exactly: 'required'
         }
-      }
+      })
     }
 
     const { doc } = msg
 
 
     if (null == typeof doc.id) {
-      return {
+      return reply(null, {
         ok: false,
         why: 'invalid-field',
         details: {
           path: ['doc', 'id'],
           why_exactly: 'required'
         }
-      }
+      })
     }
 
     const { id: doc_id } = doc
@@ -64,7 +64,12 @@ async function search_elastic(options) {
       index: SENECA_INDEX,
       type: SENECA_DOCTYPE,
       id: doc_id,
-      body
+      body,
+
+      // NOTE: Yes, "refresh" has to be a string:
+      // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/api-create.html
+      //
+      refresh: 'true'
     })
 
     if ('created' !== created.result) {
@@ -79,14 +84,14 @@ async function search_elastic(options) {
 
   seneca.add('sys:search,cmd:search', async function (msg, reply) {
     if (null == msg.query) {
-      return {
+      return reply(null, {
         ok: false,
         why: 'invalid-field',
         details: {
           path: ['query'],
           why_exactly: 'required'
         }
-      }
+      })
     }
 
     const { query } = msg
@@ -98,6 +103,7 @@ async function search_elastic(options) {
     //
     //
     const out = await elastic_client.search({
+      index: SENECA_INDEX,
       q: query
     })
 
@@ -113,14 +119,14 @@ async function search_elastic(options) {
 
   seneca.add('sys:search,cmd:remove', async function (msg, reply) {
     if (null == msg.id) {
-      return {
+      return reply(null, {
         ok: false,
         why: 'invalid-field',
         details: {
           path: ['id'],
           why_exactly: 'required'
         }
-      }
+      })
     }
 
     const { id: doc_id } = msg
@@ -132,7 +138,7 @@ async function search_elastic(options) {
       id: doc_id
     })
 
-    if ('ok' !== removed.status) {
+    if ('deleted' !== removed.result) {
       return reply(null, { ok: false, why: 'remove-failed' })
     }
 
